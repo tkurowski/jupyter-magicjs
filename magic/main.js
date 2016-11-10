@@ -72,6 +72,7 @@ define(['services/kernels/kernel'], function (kernel) {
          */
         get options() {
             if (!this._options) {
+                var PRESENT = true; // value used for valueless opts
                 var options = {},
                     argv = this.argv,
                     inx = 1,
@@ -81,7 +82,7 @@ define(['services/kernels/kernel'], function (kernel) {
                     if (opt[0] === '-') {
                         var next = argv[inx],
                             nextvalue = (next && next[0] !== '-') ?
-                                next : true,
+                                next : PRESENT,
                             name,
                             value;
                         if (opt[1] === '-') { // --opt, --opt=val, --opt val
@@ -97,7 +98,7 @@ define(['services/kernels/kernel'], function (kernel) {
                         }
                         else { // -x, -xvalue, -x value
                             name = opt.substr(1, 1),
-                            value = opt.substr(2) || true;
+                            value = opt.substr(2) || PRESENT;
                         }
                         options[name] = value;
                     }
@@ -109,19 +110,6 @@ define(['services/kernels/kernel'], function (kernel) {
 
         toString: function () {return "[object MagicCode]";}
     };
-
-    /** PRE MAGIC.test(text) */
-    function parse(text) {
-        var lineEnd = text.indexOf('\n');
-        if (lineEnd === -1) lineEnd = text.length;
-
-        var head = text.substring(0, lineEnd),
-            body = text.substr(lineEnd + 1).trim();
-
-        return {argv: argv(head), body: body};
-    }
-
-    function argv(cmd) {return cmd.split(/\s+/);}
 
     return {
         register: register
