@@ -61,14 +61,19 @@ define(['services/kernels/kernel'], function (kernel) {
         },
 
         /**
-         * @type{Array} Arguments. argv[0] is the magic command name
+         * @return {Array} Arguments. argv[0] is the magic command name
          */
         get argv() {
             return this.cmd.split(/\s+/);
         },
 
         /**
-         * @type{Object} Options dict.
+         * Build {option: value} map.
+         * There's (currently) no arguments definition: every option is assumed
+         * to have a value (may 'swallow' the following positional argument
+         * or default to `PRESENT` (true) if there's none)
+         *
+         * @return {Object} Options dict.
          */
         get options() {
             if (!this._options) {
@@ -90,15 +95,13 @@ define(['services/kernels/kernel'], function (kernel) {
                             if (eqinx === -1) { // --opt [val]
                                 name = opt.substr(2);
                                 value = nextvalue;
-                            }
-                            else { // --opt=val
+                            } else { // --opt=val
                                 name = opt.substring(2, eqinx);
                                 value = opt.substr(eqinx + 1);
                             }
-                        }
-                        else { // -x, -xvalue, -x value
+                        } else { // -x, -xvalue, -x value
                             name = opt.substr(1, 1),
-                            value = opt.substr(2) || PRESENT;
+                            value = opt.substr(2) || nextvalue;
                         }
                         options[name] = value;
                     }
